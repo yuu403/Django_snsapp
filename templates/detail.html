@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+{% endblock customcss %}
+
+{% block content %}
+<div class="container">
+   <div class="alert alert-success" role="alert">
+       <p>タイトル：{{object.title}}</p>
+       <p>投稿者：{{object.user}}</p>
+       <p>コメント：{{object.content}}</p>
+        <a href="#" class="like-btn" data-id="{{object.pk}}">
+            <i class="{% if request.user in object.like.all %}fas{% else %}far{% endif %} fa-heart"></i>
+        </a>
+        <span id="like-count">{{object.like.count}}</span>
+
+        {% if object.user in connection.0.following.all %}
+        <a href="{% url 'follow-detail' object.pk %}" class="btn btn-danger ms-3" tabindex="-1" role="button" aria-disabled="true">フォロー解除</a>
+        {% else %}
+        <a href="{% url 'follow-detail' object.pk %}" class="btn btn-primary ms-3" tabindex="-1" role="button" aria-disabled="true">フォロー</a>
+        {% endif %}
+
+       {% if object.user == request.user %} 
+       <a href="{% url 'update' object.pk %}" class="btn btn-primary ms-3" tabindex="-1" role="button" aria-disabled="true">編集</a>
+       <a href="{% url 'delete' object.pk %}" class="btn btn-danger ms-3" tabindex="-1" role="button" aria-disabled="true">削除</a>
+       {% endif %}
+   </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const likeBtn = document.querySelector('.like-btn');
+
+    likeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const postId = this.dataset.id;
+
+        fetch(`/like/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const icon = this.querySelector('i');
+            const count = document.getElementById('like-count');
+
+            count.textContent = data.like_count;
+
+            if (data.liked) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+        });
+    });
+
+});
+
+// CSRFトークン取得（Django用）
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock content %}
