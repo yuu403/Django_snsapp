@@ -1,12 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.urls import reverse_lazy
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
 from .models import Post,Connection
+
 
 
 class Home(LoginRequiredMixin, ListView):
@@ -19,6 +20,11 @@ class Home(LoginRequiredMixin, ListView):
        return Post.objects.exclude(user=self.request.user)\
         .select_related('user')\
         .prefetch_related('like')
+   
+   def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['connection'], _ = Connection.objects.get_or_create(user=self.request.user)
+    return context
       
    
 class MyPost(LoginRequiredMixin, ListView):
@@ -31,6 +37,11 @@ class MyPost(LoginRequiredMixin, ListView):
         return Post.objects.filter(user=self.request.user)\
         .select_related('user')\
         .prefetch_related('like')
+   
+   def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['connection'], _ = Connection.objects.get_or_create(user=self.request.user)
+    return context
 
 
 class DetailPost(LoginRequiredMixin, DetailView):
@@ -40,7 +51,7 @@ class DetailPost(LoginRequiredMixin, DetailView):
 
    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['connection'] = Connection.objects.get_or_create(user=self.request.user)
+        context['connection'], _ = Connection.objects.get_or_create(user=self.request.user)
         return context
 
 class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -109,31 +120,34 @@ class LikeBase(LoginRequiredMixin, View):
 
 ###############################################################
 #フォロー処理
+
 class FollowBase(LoginRequiredMixin, View):
-    """フォローのベース。リダイレクト先を以降で継承先で設定"""
-    def get(self, request, *args, **kwargs):
-        pk = self.kwargs['pk']
-        target_user = Post.objects.get(pk=pk).user
+    def post(self, request, *args, **kwargs):
+        user_id = self.kwargs['pk']
 
-        my_connection, created = Connection.objects.get_or_create(user=self.request.user)
+        # フォロー対象ユーザー取得
+        target_user = get_object_or_404(User, pk=user_id)
 
+        # 自分自身はフォローできない
+        if target_user == request.user:
+            return JsonResponse({'error': 'cannot follow yourself'}, status=400)
+
+        # 自分のフォロー情報取得
+        my_connection, _ = Connection.objects.get_or_create(user=request.user)
+
+        followed = False
+
+        # フォロー切り替え
         if target_user in my_connection.following.all():
             my_connection.following.remove(target_user)
         else:
             my_connection.following.add(target_user)
+            followed = True
 
-class FollowHome(FollowBase):
-    """HOMEページでフォローした場合"""
-    def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
-        return redirect('home')
+        return JsonResponse({
+            'followed': followed
+        })
 
-class FollowDetail(FollowBase):
-    """詳細ページでフォローした場合"""
-    def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
-        pk = self.kwargs['pk'] 
-        return redirect('detail', pk)
 ###############################################################
 
 
@@ -144,14 +158,14 @@ class FollowList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         """フォローリスト内にユーザーが含まれている場合のみクエリセット返す"""
-        my_connection = Connection.objects.get_or_create(user=self.request.user)
-        all_follow = my_connection[0].following.all()
+        my_connection, _ = Connection.objects.get_or_create(user=self.request.user)
+        all_follow = my_connection.following.all()
         return Post.objects.filter(user__in=all_follow)\
         .select_related('user')\
         .prefetch_related('like')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['connection'] = Connection.objects.get_or_create(user=self.request.user)
+        context['connection'], _ = Connection.objects.get_or_create(user=self.request.user)
         return context
 # Create your views here.

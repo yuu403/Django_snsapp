@@ -6,3 +6,18 @@
 .add-color{
     color:palevioletred;
 }
+
+button {
+  transition: 0.2s;
+}
+button:active {
+  transform: scale(0.95);
+}
+
+.follow-btn {
+    padding: 5px 10px;
+}
+
+.following {
+    background-color: #ccc;
+}

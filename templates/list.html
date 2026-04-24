@@ -12,6 +12,16 @@
         <p>タイトル：<a href="{% url 'detail' item.pk %}">{{item.title}}</a></p>
         <p>投稿者：{{item.user.username}}</p>
 
+        {% if item.user != request.user %}
+        <button class="follow-btn" {% if item.user in connection.following.all %}following{% endif %}" data-id="{{item.user.pk}}">
+            {% if item.user in connection.following.all %}
+            フォロー解除
+            {% else %}
+            フォロー
+            {% endif %}
+        </button>
+        {% endif %}
+
         <a href="#" class="like-btn" data-id="{{item.pk}}">
             <i class="{% if request.user in item.like.all %}fas{% else %}far{% endif %} fa-heart"></i>
         </a>
@@ -20,55 +30,73 @@
     {% endfor %}
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
-    const likeButtons = document.querySelectorAll('.like-btn');
+        // like
+        const likeButtons = document.querySelectorAll('.like-btn');
 
-    likeButtons.forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
+        likeButtons.forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
 
-            const postId = this.dataset.id;
+                const postId = this.dataset.id;
 
-            fetch(`/like/${postId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken'),
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const icon = this.querySelector('i');
-                const count = this.nextElementSibling;
+                fetch(`/like/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const icon = this.querySelector('i');
+                        const count = this.nextElementSibling;
 
-                count.textContent = data.like_count;
+                        count.textContent = data.like_count;
 
-                if (data.liked) {
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
-                } else {
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
-                }
+                        icon.classList.toggle('fas', data.liked);
+                        icon.classList.toggle('far', !data.liked);
+                    });
             });
         });
+
+        // follow
+        const followBtns = document.querySelectorAll('.follow-btn');
+
+        followBtns.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const userId = this.dataset.id;
+
+                fetch(`/users/${userId}/follow/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        this.textContent = data.followed ? 'フォロー解除' : 'フォロー';
+                    });
+            });
+        });
+
     });
 
-});
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 </script>
 {% endblock content %}
