@@ -6,7 +6,7 @@ from django.views import View
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
-from .models import Post,Connection
+from .models import Post, Connection, Follow
 
 
 
@@ -133,15 +133,47 @@ class FollowBase(LoginRequiredMixin, View):
             return JsonResponse({'error': 'cannot follow yourself'}, status=400)
 
         # 自分のフォロー情報取得
-        my_connection, _ = Connection.objects.get_or_create(user=request.user)
+        
 
         followed = False
 
         # フォロー切り替え
-        if target_user in my_connection.following.all():
-            my_connection.following.remove(target_user)
+        follow = Follow.objects.filter(
+            follower=request.user,
+            following=target_user
+        )
+        if follow.exists():
+            follow.delete()
+            followed = False
         else:
-            my_connection.following.add(target_user)
+            Follow.objects.create(
+                follower=request.user,
+                following=target_user
+            )
+            followed = True
+
+        return JsonResponse({
+            'followed': followed
+        })
+    
+from .models import Follow
+
+class FollowToggleView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        target_user = get_object_or_404(User, pk=self.kwargs['pk'])
+
+        if target_user == request.user:
+            return JsonResponse({'error': 'cannot follow yourself'}, status=400)
+
+        follow, created = Follow.objects.get_or_create(
+            follower=request.user,
+            following=target_user
+        )
+
+        if not created:
+            follow.delete()
+            followed = False
+        else:
             followed = True
 
         return JsonResponse({
@@ -152,20 +184,15 @@ class FollowBase(LoginRequiredMixin, View):
 
 
 class FollowList(LoginRequiredMixin, ListView):
-    """フォローしたユーザーの投稿をリスト表示"""
     model = Post
     template_name = 'list.html'
 
     def get_queryset(self):
-        """フォローリスト内にユーザーが含まれている場合のみクエリセット返す"""
-        my_connection, _ = Connection.objects.get_or_create(user=self.request.user)
-        all_follow = my_connection.following.all()
-        return Post.objects.filter(user__in=all_follow)\
-        .select_related('user')\
-        .prefetch_related('like')
+        following_users = User.objects.filter(
+            followers__follower=self.request.user
+        )
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['connection'], _ = Connection.objects.get_or_create(user=self.request.user)
-        return context
+        return Post.objects.filter(user__in=following_users)\
+            .select_related('user')\
+            .prefetch_related('like')
 # Create your views here.

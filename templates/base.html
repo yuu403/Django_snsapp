@@ -14,25 +14,44 @@
     {% endblock customcss %}
 
     <title>SNSアプリサンプル</title>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/like.js' %}"></script>
+    <script src="{% static 'js/follow.js' %}"></script>
+
   </head>
   <body>
   
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
         <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+          <a class="nav-link
+          {% if request.resolver_match.url_name == 'home' %} active
+          {% endif %}"
+          href="{% url 'home' %}">Home</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-              <a class="nav-link" href="{% url 'follow-list' %}">フォローユーザーの投稿</a>
-              <a class="nav-link" href="{% url 'mypost' %}">自分の投稿</a>
-              <a class="nav-link" href="/accounts/logout/">ログアウト</a>
-              <a class="nav-link btn btn-success" href="{% url 'create' %}" role="button">投稿</a>
+          <div class="collapse navbar-collapse justify-content-between" id="navbarNavAltMarkup">
+            <div class="navbar-nav align-items-center gap-2">
+              <a class="nav-link
+              {% if request.resolver_match.url_name == 'follow-list' %}
+              active
+              {% endif %}"
+              href="{% url 'follow-list' %}">フォローユーザーの投稿</a>
+              <a class="nav-link
+              {% if request.resolver_match.url_name == 'mypost' %}
+              active
+              {% endif %}"
+              href="{% url 'mypost' %}">自分の投稿</a>
+              <a class="btn btn-outline-primary px-4
+              {% if request.resolver_match.url_name == 'create' %}
+              active
+              {% endif %}"
+              href="{% url 'create' %}">投稿</a>
             </div>
-          </div>
-          <div>
-            {{request.user.username}}さん
+            <div class="d-flex align-items-center gap-3">
+              {{request.user.username}}さん
+              <a class="nav-link" href="/accounts/logout/">ログアウト</a>
+            </div>
           </div>
         </div>
       </nav>

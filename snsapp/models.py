@@ -24,6 +24,25 @@ class Connection(models.Model):
        return self.user.username
 # Create your models here.
 
+class Follow(models.Model):
+    follower = models.ForeignKey(
+        User,
+        related_name='following_rel',
+        on_delete=models.CASCADE
+    )
+    following = models.ForeignKey(
+        User,
+        related_name='followers_rel',
+        on_delete=models.CASCADE
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('follower', 'following')
+
+    def __str__(self):
+        return f"{self.follower} -> {self.following}"
+
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
