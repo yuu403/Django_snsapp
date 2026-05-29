@@ -6,7 +6,7 @@ from django.views import View
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
-from .models import Post, Connection, Follow
+from .models import Post, Follow
 
 
 
@@ -23,7 +23,9 @@ class Home(LoginRequiredMixin, ListView):
    
    def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    context['connection'], _ = Connection.objects.get_or_create(user=self.request.user)
+    context['following_users'] = Follow.objects.filter(
+        follower=self.request.user
+    ).values_list('following', flat=True)
     return context
       
    
@@ -40,7 +42,9 @@ class MyPost(LoginRequiredMixin, ListView):
    
    def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    context['connection'], _ = Connection.objects.get_or_create(user=self.request.user)
+    context['following_users'] = Follow.objects.filter(
+        follower=self.request.user
+    ).values_list('following', flat=True)
     return context
 
 
@@ -51,7 +55,9 @@ class DetailPost(LoginRequiredMixin, DetailView):
 
    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['connection'], _ = Connection.objects.get_or_create(user=self.request.user)
+        context['following_users'] = Follow.objects.filter(
+        follower=self.request.user
+    ).values_list('following', flat=True)
         return context
 
 class UpdatePost(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -156,7 +162,6 @@ class FollowBase(LoginRequiredMixin, View):
             'followed': followed
         })
     
-from .models import Follow
 
 class FollowToggleView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
@@ -188,11 +193,11 @@ class FollowList(LoginRequiredMixin, ListView):
     template_name = 'list.html'
 
     def get_queryset(self):
-        following_users = User.objects.filter(
-            followers__follower=self.request.user
-        )
+        following_users = Follow.objects.filter(
+            follower=self.request.user
+        ).values_list('following', flat=True)
 
-        return Post.objects.filter(user__in=following_users)\
-            .select_related('user')\
-            .prefetch_related('like')
+        return Post.objects.filter(
+            user__in=following_users
+        ).select_related('user').prefetch_related('like')
 # Create your views here.

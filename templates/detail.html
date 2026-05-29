@@ -26,7 +26,7 @@
 
         {% if object.user != request.user %}
         <button class="follow-btn" data-id="{{object.user.pk}}">
-            {% if object.user in connection.following.all %}
+            {% if object.user.id in following_users %}
             フォロー解除
             {% else %}
             フォロー
