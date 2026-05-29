@@ -23,12 +23,12 @@ button:active {
 }
 
 .post-card {
-    background: white;
+    background: #ceffc7;
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    border: 1px solid #e9ecef
+    border: 1px solid #007cf9
 }
 
 .post-title {
@@ -61,7 +61,7 @@ button:active {
 }
 
 .nav-link.active {
-    border: 1px solid #e9ecef;
+    border: 1px solid #0269cf;
     background-color: #0d6efd;
     color: white !important;
     border-radius: 8px;
@@ -75,5 +75,5 @@ button:active {
 }
 
 body {
-    background-color: #f5f7fa;
+    background-color: white;
 }
