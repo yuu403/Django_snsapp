@@ -14,7 +14,7 @@
                 {{item.title}}
             </a>
         </h4>
-        <p class="post-user">投稿者：{{item.user.username}}</p>
+        <p class="post-user">{{item.user.username}}</p>
 
         <div class="post-actions">
             {% if item.user != request.user %}

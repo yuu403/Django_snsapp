@@ -8,9 +8,17 @@
 {% block content %}
 <div class="container">
     <div class="post-card">
-        <p>タイトル：{{object.title}}</p>
-        <p>投稿者：{{object.user}}</p>
-        <p>コメント：{{object.content}}</p>
+        <h2 class="post-title">
+            {{ post.title }}
+        </h2>
+
+        <p class="post-user">
+            {{ post.user.username }}
+        </p>
+
+        <div class="post-content">
+            {{ post.content }}
+        </div>
         <a href="#" class="like-btn" data-id="{{object.pk}}">
             <i class="{% if request.user in object.like.all %}fas{% else %}far{% endif %} fa-heart"></i>
         </a>
