@@ -26,18 +26,50 @@ button:active {
     background: white;
     border-radius: 12px;
     padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #e9ecef
+}
+
+.post-title {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.post-title a {
+    color: #212529;
+    text-decoration: none;
+}
+
+.post-title a:hover {
+    color: #0d6efd;
+}
+
+.post-user {
+    color: #6c757d;
     margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .nav-link.active {
+    border: 1px solid #e9ecef;
+    background-color: #0d6efd;
+    color: white !important;
+    border-radius: 8px;
     font-weight: bold;
-    color: #0d6efd !important; 
-    background: rgba(13, 110, 253, 0.1); 
-    border-radius: 8px; 
+    padding: 8px 16px; 
 }
 
 .btn.active { 
     background: #0d6efd;
     color: white; 
+}
+
+body {
+    background-color: #f5f7fa;
 }
