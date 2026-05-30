@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>
+        {{ target_user.username }} の投稿
+    </h2>
+
+    {% for item in object_list %}
+
+    <div class="post-card">
+
+        <h4>
+            <a href="{% url 'detail' item.pk %}">
+                {{ item.title }}
+            </a>
+        </h4>
+        <p class="post-content">
+            {{ item.content|truncatechars:100 }}
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

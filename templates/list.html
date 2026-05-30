@@ -14,11 +14,19 @@
                 {{item.title}}
             </a>
         </h4>
-        <p class="post-user">{{item.user.username}}</p>
+        <p class="post-user">
+            <a href="{% url 'user_posts' item.user.pk %}">
+                {{item.user.username}}
+            </a>
+        </p>
+        <p class="post-content">
+            {{ item.content|truncatechars:100 }}
+        </p>
 
         <div class="post-actions">
             {% if item.user != request.user %}
-            <button class="follow-btn {% if item.user.id in following_users %}following{% endif %}" data-id="{{item.user.pk}}">
+            <button class="follow-btn {% if item.user.id in following_users %}following{% endif %}"
+                data-id="{{item.user.pk}}">
                 {% if item.user.id in following_users %}
                 フォロー解除
                 {% else %}
@@ -27,7 +35,7 @@
             </button>
             {% endif %}
         </div>
-        
+
 
         <a href="#" class="like-btn" data-id="{{item.pk}}">
             <i class="{% if request.user in item.like.all %}fas{% else %}far{% endif %} fa-heart"></i>

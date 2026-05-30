@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>フォロー中ユーザー</h2>
+
+    {% for user in object_list %}
+
+    <div class="post-card">
+
+        <a href="{% url 'user_posts' user.pk %}">
+            {{ user.username }}
+        </a>
+
+    </div>
+
+    {% empty %}
+
+    <p>フォロー中ユーザーはいません</p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

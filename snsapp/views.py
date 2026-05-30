@@ -200,4 +200,46 @@ class FollowList(LoginRequiredMixin, ListView):
         return Post.objects.filter(
             user__in=following_users
         ).select_related('user').prefetch_related('like')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['following_users'] = Follow.objects.filter(
+            follower=self.request.user
+        ).values_list('following', flat=True)
+
+        return context
+    
+
+
+class FollowUserList(LoginRequiredMixin, ListView):
+    model = User
+    template_name = 'follow_users.html'
+
+    def get_queryset(self):
+        return User.objects.filter(
+            followers_rel__follower=self.request.user
+        )
+    
+class UserPostList(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'user_posts.html'
+
+    def get_queryset(self):
+
+        self.target_user = User.objects.get(
+            pk=self.kwargs['pk']
+        )
+
+        return Post.objects.filter(
+            user=self.target_user
+        ).select_related('user')
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        context['target_user'] = self.target_user
+
+        return context
 # Create your views here.

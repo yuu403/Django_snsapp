@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Home, MyPost, DetailPost, CreatePost, UpdatePost, DeletePost, LikeBase, FollowBase, FollowList
+from .views import Home, MyPost, DetailPost, CreatePost, UpdatePost, DeletePost, LikeBase, FollowBase, FollowList, FollowUserList, UserPostList
               #Home, MyPost追加
 
 
@@ -13,4 +13,6 @@ urlpatterns = [
    path('like/<int:pk>/', LikeBase.as_view(), name='like'),
    path('users/<int:pk>/follow/', FollowBase.as_view(), name='follow'),
    path('follow-list/', FollowList.as_view(), name='follow-list'),
+   path('follow-users/', FollowUserList.as_view(), name='follow_users'),
+   path('user-posts/<int:pk>/', UserPostList.as_view(), name='user_posts'),
 ]
