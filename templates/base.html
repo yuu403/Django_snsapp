@@ -36,7 +36,7 @@
               {% if request.resolver_match.url_name == 'follow-list' %}
               active
               {% endif %}"
-              href="{% url 'follow-list' %}">フォローユーザーの投稿</a>
+              href="{% url 'follow_users' %}">フォローユーザー</a>
               <a class="nav-link
               {% if request.resolver_match.url_name == 'mypost' %}
               active
