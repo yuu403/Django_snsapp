@@ -41,6 +41,7 @@
             <i class="{% if request.user in item.like.all %}fas{% else %}far{% endif %} fa-heart"></i>
         </a>
         <span class="like-count">{{item.like.count}}</span>
+        <span class="comments-count">{{item.comments.count}}</span>
     </div>
     {% endfor %}
 </div>

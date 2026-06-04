@@ -41,6 +41,50 @@
             aria-disabled="true">削除</a>
         {% endif %}
     </div>
+
+    <h4>コメント投稿</h4>
+
+    <form method="POST" action="{% url 'comment' object.pk %}">
+        {% csrf_token %}
+        <textarea name="content" class="form-control" rows="3" required>
+    </textarea>
+
+        <button class="btn btn-primary mt-2" type="submit">
+            コメントする
+        </button>
+    </form>
+    <hr>
+
+    <h4>
+        コメント
+        ({{ object.comments.count }})
+    </h4>
+
+    {% for comment in object.comments.all %}
+
+    <div class="post-card">
+
+        <strong>
+            {{ comment.user.username }}
+        </strong>
+
+        <small>
+            {{ comment.created_at }}
+        </small>
+
+        <p>
+            {{ comment.content }}
+        </p>
+
+    </div>
+
+    {% empty %}
+
+    <p>
+        まだコメントはありません
+    </p>
+
+    {% endfor %}
 </div>
 
 {% endblock content %}

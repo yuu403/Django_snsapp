@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Home, MyPost, DetailPost, CreatePost, UpdatePost, DeletePost, LikeBase, FollowBase, FollowList, FollowUserList, UserPostList
+from .views import Home, MyPost, DetailPost, CreatePost, UpdatePost, DeletePost, LikeBase, FollowBase, FollowList, FollowUserList, UserPostList, CommentCreate
               #Home, MyPost追加
 
 
@@ -15,4 +15,5 @@ urlpatterns = [
    path('follow-list/', FollowList.as_view(), name='follow-list'),
    path('follow-users/', FollowUserList.as_view(), name='follow_users'),
    path('user-posts/<int:pk>/', UserPostList.as_view(), name='user_posts'),
+   path('comment/<int:pk>/', CommentCreate.as_view(),name='comment'),
 ]

@@ -1,12 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
-from .models import Post, Follow
+from .models import Post, Follow, Comment
+from .forms import CommentForm
 
 
 
@@ -242,4 +243,28 @@ class UserPostList(LoginRequiredMixin, ListView):
         context['target_user'] = self.target_user
 
         return context
-# Create your views here.
+
+
+class CommentCreate(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+
+    def form_valid(self, form):
+
+        form.instance.user = self.request.user
+
+        form.instance.post = get_object_or_404(
+            Post,
+            pk=self.kwargs['pk']
+        )
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+
+        return reverse(
+            'detail',
+            kwargs={
+                'pk': self.kwargs['pk']
+            }
+        )
