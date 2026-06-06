@@ -92,19 +92,19 @@ Password: （任意）
 
 ### 投稿一覧
 
-![demo](./image/post_list.pdf)
+![demo](./image/post_list.png)
 
 ### 投稿詳細
 
-![demo](./image/post_detail.pdf)
+![demo](./image/post_detail.png)
 
 ### フォロー中ユーザー一覧
 
-![demo](./image/follow_list.pdf)
+![demo](./image/follow_list.png)
 
 ### ユーザー別投稿一覧
 
-![demo](./image/user_post_list.pdf)
+![demo](./image/user_post_list.png)
 
 ---
 
