@@ -92,19 +92,19 @@ Password: （任意）
 
 ### 投稿一覧
 
-![demo](./image/post_list.png)
+![demo](./Image/post_list.png)
 
 ### 投稿詳細
 
-![demo](./image/post_detail.png)
+![demo](./Image/post_detail.png)
 
 ### フォロー中ユーザー一覧
 
-![demo](./image/follow_list.png)
+![demo](./Image/follow_list.png)
 
 ### ユーザー別投稿一覧
 
-![demo](./image/user_post_list.png)
+![demo](./Image/user_post_list.png)
 
 ---
 
@@ -118,7 +118,7 @@ Password: （任意）
 * Like
 * Follow
 
-![demo](./image/ER.pdf)
+![demo](./Image/ER.pdf)
 
 ---
 
